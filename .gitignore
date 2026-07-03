@@ -1,0 +1,19 @@
+# Heavy HADDOCK run directories (regenerable from scripts)
+results/haddock3_run_1/
+results/haddock3_run_2/
+results/haddock3_abinitio/
+
+# Re-downloadable / regenerable
+data/pdb/*.pdb
+structures/*_initial.pdb
+results/_*.pdb
+results/_tmp*.pdb
+
+# Duplicates / cruft
+Dockerfile.txt
+job_ids.json
+
+# OS / editor
+Thumbs.db
+*.pyc
+__pycache__/

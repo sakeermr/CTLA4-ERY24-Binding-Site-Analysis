@@ -1,0 +1,49 @@
+{
+  "sequence": "CAWGQAILEGELAWLEGGGGGAGQLADLKRQLAWWKQAC",
+  "length": 39,
+  "molecular_weight": 4142.676100000001,
+  "isoelectric_point": 4.870556068420409,
+  "aromaticity": 0.10256410256410256,
+  "instability_index": 50.00512820512821,
+  "gravy": -0.05641025641025651,
+  "composition": {
+    "A": 7,
+    "W": 4,
+    "L": 6,
+    "Q": 4,
+    "K": 2,
+    "R": 1,
+    "E": 3,
+    "G": 8
+  },
+  "predicted_regions": {
+    "Helix_1": "A3-E9 (hydrophobic + polar)",
+    "Helix_2": "L11-L17 (hydrophobic)",
+    "Loop": "G18-G23 (flexible)",
+    "Helix_3": "A24-L32 (charged + hydrophobic)",
+    "C_terminus": "Q33-C40 (polar + aromatic)"
+  },
+  "predicted_contacts": {
+    "hydrophobic": [
+      "W3",
+      "W15",
+      "L8",
+      "L17",
+      "L32",
+      "W36",
+      "L11"
+    ],
+    "charged": [
+      "Q5",
+      "Q25",
+      "K29",
+      "R31",
+      "Q33"
+    ],
+    "aromatic": [
+      "W3",
+      "W15",
+      "W36"
+    ]
+  }
+}

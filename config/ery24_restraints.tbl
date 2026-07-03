@@ -1,0 +1,13 @@
+! HADDOCK AIR restraints: ERY2-4 (chain B) to CTLA-4 (chain A)
+! CTLA-4 binding site: 33 35 53 63 65 95 97 99 100 101 102 103 104 105 106
+! ERY2-4 active: 3 8 11 15 17 25 29 31 32 36
+assi (segid B and resi 3) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 8) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 11) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 15) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 17) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 25) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 29) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 31) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 32) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0
+assi (segid B and resi 36) (segid A and (resi 33 or resi 35 or resi 53 or resi 63 or resi 65 or resi 95 or resi 97 or resi 99 or resi 100 or resi 101 or resi 102 or resi 103 or resi 104 or resi 105 or resi 106)) 2.0 2.0 0.0

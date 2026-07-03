@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  haddock3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: haddock3-ery24:latest
+    container_name: haddock3_docking
+    volumes:
+      - ./structures:/haddock_work/structures
+      - ./config:/haddock_work/config
+      - ./results:/haddock_work/results
+      - ./analysis:/haddock_work/analysis
+      - ./scripts:/haddock_work/scripts
+    working_dir: /haddock_work
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true

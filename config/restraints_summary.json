@@ -1,0 +1,36 @@
+{
+  "template": "B7-1/CTLA-4 interface from PDB 1I8L",
+  "receptor_chain": "C",
+  "ligand_chain": "A (B7-1 for reference)",
+  "docking_ligand": "ERY2-4 (generated)",
+  "ctla4_binding_site": [
+    33,
+    35,
+    53,
+    63,
+    65,
+    95,
+    97,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106
+  ],
+  "ery24_active_residues": [
+    3,
+    8,
+    11,
+    15,
+    17,
+    25,
+    29,
+    31,
+    32,
+    36
+  ],
+  "distance_cutoff_angstrom": 5.0
+}
