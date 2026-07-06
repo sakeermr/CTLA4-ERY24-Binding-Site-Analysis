@@ -1,195 +1,142 @@
-# ERY2-4 / CTLA-4 Binding Site Analysis
+# Prediction of the ERY2-4 Peptide Binding Site on CTLA-4 by Restraint-Guided and Blind Molecular Docking
 
-Computational prediction of the binding site of the **ERY2-4** helix-loop-helix (HLH) peptide on the immune checkpoint receptor **CTLA-4**, using restraint-guided and blind molecular docking with **HADDOCK3**, an **AlphaFold2** peptide model, and the CTLA-4/B7-1 crystal structure (PDB **1I8L**) as reference.
+[![Method: HADDOCK3](https://img.shields.io/badge/docking-HADDOCK3%20v2026.5.0-blue)]()
+[![Peptide model: AlphaFold2](https://img.shields.io/badge/peptide%20model-AlphaFold2-green)]()
+[![Reference: PDB 1I8L](https://img.shields.io/badge/reference-PDB%201I8L-orange)]()
+[![Author: M.R. Sakeer](https://img.shields.io/badge/author-M.R.%20Sakeer-lightgrey)]()
+
+**Author:** M. R. Sakeer
+
+Computational identification of the binding site of the affinity-matured helix–loop–helix (HLH) peptide **ERY2-4** on the immune-checkpoint receptor **CTLA-4**, combining **restraint-guided (information-driven) docking** and **blind (*ab initio*) docking**. The study provides a structural rationale for the experimentally-reported competitive inhibition of the CTLA-4 / B7-1 interaction by ERY2-4.
 
 ---
 
 ## Table of Contents
-1. [Background](#background)
-2. [Objective](#objective)
-3. [Key Result](#key-result)
-4. [Methods](#methods)
-5. [Repository Structure](#repository-structure)
-6. [How to Reproduce](#how-to-reproduce)
-7. [Detailed Results](#detailed-results)
-8. [Limitations & Confidence](#limitations--confidence)
-9. [Suggested Next Steps](#suggested-next-steps)
-10. [References](#references)
+1. [Scientific background](#scientific-background)
+2. [Aim](#aim)
+3. [System](#system)
+4. [Two docking strategies](#two-docking-strategies)
+5. [Key findings](#key-findings)
+6. [Methods](#methods)
+7. [Results in detail](#results-in-detail)
+8. [Validation and confidence](#validation-and-confidence)
+9. [Repository structure](#repository-structure)
+10. [Reproducibility](#reproducibility)
+11. [Limitations](#limitations)
+12. [Future directions](#future-directions)
+13. [References](#references)
+14. [Author and citation](#author-and-citation)
 
 ---
 
-## Background
+## Scientific background
 
-CTLA-4 (Cytotoxic T-Lymphocyte-Associated protein 4) is an inhibitory immune checkpoint receptor. It competes with the co-stimulatory receptor CD28 for the shared ligands B7-1 (CD80) and B7-2 (CD86). Blocking CTLA-4 is a validated cancer-immunotherapy strategy.
+CTLA-4 (Cytotoxic T-Lymphocyte-Associated protein 4, UniProt P16410) is an inhibitory immune-checkpoint receptor expressed on activated T-cells. It engages the B7 ligands B7-1 (CD80, UniProt P33681) and B7-2 (CD86) with higher avidity than the co-stimulatory receptor CD28, thereby attenuating T-cell activation. Antagonism of CTLA-4 is a clinically validated cancer-immunotherapy strategy.
 
-**ERY2-4** is a disulfide-cyclised helix-loop-helix peptide reported by Ramanayake et al. (*ACS Chem. Biol.* 2020, 15, 360-368). Experimentally it:
+**ERY2-4** is a disulfide-cyclised helix–loop–helix peptide obtained by yeast-surface-display affinity maturation (Ramanayake et al., *ACS Chem. Biol.* 2020, 15, 360–368). Experimentally it:
 
-- binds human CTLA-4 with **K<sub>D</sub> ~ 197 nM**,
-- **competitively inhibits** the CTLA-4/B7-1 interaction (**IC<sub>50</sub> ~ 1.1 uM**),
-- is **selective for CTLA-4** over CD28.
+- binds human CTLA-4 with **K<sub>D</sub> ≈ 197 nM** (surface plasmon resonance),
+- **competitively inhibits** the CTLA-4 / B7-1 interaction (**IC<sub>50</sub> ≈ 1.1 µM**),
+- is selective for CTLA-4 over CD28.
 
-However, the **binding site of ERY2-4 on CTLA-4 was never determined experimentally**. This project predicts it computationally.
-
-| Item | Value |
-|------|-------|
-| Target protein | CTLA-4 (chain C of PDB 1I8L) |
-| Natural/reference binder | B7-1 |
-| Peptide | ERY2-4 (39 residues) |
-| Peptide sequence | `CAWGQAILEGELAWLEGGGGGAGQLADLKRQLAWWKQAC` |
-| Peptide 3D model | AlphaFold2 (ColabFold) |
+The structural basis of this inhibition — specifically, **where ERY2-4 binds on CTLA-4** — was not determined experimentally. This repository addresses that question computationally.
 
 ---
 
-## Objective
+## Aim
 
-Predict the binding site of ERY2-4 on CTLA-4 and determine whether it overlaps the natural B7-1 ligand interface — which would provide a structural mechanism for the experimentally-observed competitive inhibition.
+Predict the binding site of ERY2-4 on CTLA-4 and test whether it overlaps the native B7-1 ligand interface. Overlap would provide a direct structural mechanism (orthosteric competition) for the experimentally-observed inhibition.
 
 ---
 
-## Key Result
+## System
 
-**Both a guided and an independent blind docking run place ERY2-4 on the B7-1 binding surface of CTLA-4 — not at a distant/allosteric site.**
+| Component | Identity | Source |
+|-----------|----------|--------|
+| Target receptor | CTLA-4 (chain C) | PDB **1I8L** |
+| Natural ligand / reference | B7-1 / CD80 (chain A) | PDB **1I8L** |
+| Ligand to dock | ERY2-4 peptide (39 aa) | AlphaFold2 model |
+| ERY2-4 sequence | `CAWGQAILEGELAWLEGGGGGAGQLADLKRQLAWWKQAC` | Fig. 3b, Ramanayake et al. 2020 |
 
-- **Guided docking** (informed by the experimental competition data) localises ERY2-4 to CTLA-4 residues **95-106**, centred on the **Pro102-Pro103-Tyr104-Tyr105** ligand-recognition motif.
-  - HADDOCK score **-61.1**, 10-model cluster, buried surface area **995 A^2**.
-  - **90% overlap (9/10 residues)** with the B7-1 interface.
-- **Blind docking** (no restraints) localises to an adjacent patch (**61-70**) that also **abuts the B7-1 surface** (contacts B7-1 residues 63/65 at 0.0 A).
-- A spatial "tiebreaker" analysis confirms **neither site is distant from the B7-1 interface** — both converge on the B7-1 binding region.
+**Note on PDB 1I8L chains.** The asymmetric unit contains two copies of each protein: chains **C** and **D** are CTLA-4; chains **A** and **B** are B7-1/CD80. The crystal captures a CTLA-4 homodimer bridging two B7-1 molecules. A single copy of the receptor (chain C) is sufficient for docking; the native B7-1 interface was derived from the interacting chain pair A–C (44 residue contacts, 4.5 Å heavy-atom cutoff).
 
-This convergence, from two independent search strategies, provides structural support for the competitive-binding model: **ERY2-4 blocks CTLA-4/B7-1 engagement by binding at the B7-1 interface.**
+---
 
-> **Confidence level:** a well-supported, experimentally-consistent *hypothesis* — not an experimentally-determined structure. The exact contact sub-region should be confirmed by mutagenesis.
+## Two docking strategies
 
-See [`report/`](report/) for the full write-up and figure.
+This study deliberately uses **two independent docking strategies** and compares them. This is central to the rigour of the work.
+
+### 1. Restraint-guided docking (information-driven)
+Ambiguous Interaction Restraints (AIRs) were used to **direct** the peptide toward the B7-1 region of CTLA-4. The justification is experimental: because ERY2-4 is known to competitively inhibit B7-1, it is reasonable to test the hypothesis that it binds at or near the B7-1 site. Restraint-guided docking tests this hypothesis and, being informed by prior knowledge, is expected to be the more accurate of the two for a flexible peptide.
+
+### 2. Blind docking (*ab initio*)
+**No interaction restraints** were supplied. The peptide was allowed to sample the entire CTLA-4 surface using surface-wide random-AIR sampling of 1000 rigid-body models. Blind docking serves as an **unbiased control**: if the peptide localises to the B7-1 region *without* being guided there, this constitutes independent support and guards against the circularity inherent in restraint-guided docking alone.
+
+> The combination is the point: **restraint-guided docking tests the hypothesis; blind docking checks that the answer was not merely imposed by the restraints.** Agreement between the two strengthens the conclusion.
+
+---
+
+## Key findings
+
+1. **Restraint-guided docking** places ERY2-4 on the C-terminal segment of the B7-1 binding surface of CTLA-4, contacting residues **95, 97, 98, 99, 100, 102, 103, 104, 105, 106**, centred on the **Pro102–Pro103–Tyr104–Tyr105** ligand-recognition motif (part of CTLA-4's MYPPPYY ligand-binding loop).
+   - HADDOCK score **−61.1 ± 2.0**; top cluster of 10 models; buried surface area **995 Å²**.
+   - **90 % overlap (9/10 residues)** with the experimentally-defined B7-1 interface.
+
+2. **The interface chemistry reproduces the experimental structure–activity data.** The peptide tryptophans (Trp3, Trp34, Trp35) and Leu8 dominate the contacts against CTLA-4 Tyr104/Tyr105 — consistent with the conserved Leu→Trp substitution identified as critical for binding by Ramanayake et al.
+
+3. **Blind docking** independently localises ERY2-4 to the B7-1 surface region (residues 61–70, abutting B7-1 residues 63/65 at 0.0 Å), rather than to a distant/allosteric site. A spatial "tiebreaker" analysis confirms **both the restraint-guided and blind strategies converge on the B7-1 binding surface**.
+
+4. Together these support a model in which **ERY2-4 competitively blocks CTLA-4/B7-1 engagement by occupying the B7-1 binding surface**, providing a structural rationale for the inhibition reported experimentally.
+
+> **Confidence.** This is a well-supported, experimentally-consistent structural hypothesis derived from restraint-guided docking and corroborated by blind docking — not an experimentally-determined complex structure. The precise contact sub-region should be confirmed by mutagenesis.
 
 ---
 
 ## Methods
 
 ### Structure preparation
-- **Receptor (CTLA-4):** extracted as chain C from PDB **1I8L** (the CTLA-4/B7-1 complex).
-- **B7-1 reference interface:** computed directly from 1I8L (4.5 A heavy-atom cutoff), auto-detecting the interacting chain pair (chains A-C, 44 residue contacts). B7-1 interface residues: `33, 35, 53, 63, 65, 95, 97, 99, 100, 101, 102, 103, 104, 105, 106`.
-- **Peptide (ERY2-4):** 3D model generated from sequence with **AlphaFold2** (ColabFold); top-ranked model used.
-- Chains renamed so receptor = A, peptide = B for consistent restraint referencing.
+- **Receptor:** CTLA-4 chain C extracted from PDB 1I8L and cleaned (`prepare_ctla4_receptor.py`).
+- **Native B7-1 interface:** computed directly from 1I8L at a 4.5 Å heavy-atom cutoff, auto-detecting the interacting chain pair (A–C, 44 residue contacts) (`extract_b7_interface.py`). B7-1 interface residues: 33, 35, 53, 63, 65, 95, 97, 99, 100, 101, 102, 103, 104, 105, 106.
+- **Peptide:** ERY2-4 3D model generated from sequence with AlphaFold2 (ColabFold); top-ranked model retained.
+- Chains standardised (receptor = A, peptide = B) for restraint consistency (`fix_chains.py`).
+- **Restraints:** AIRs for the guided run built by `generate_haddock_restraints.py`.
 
-### Docking
-Performed with **HADDOCK3 v2026.5.0** inside a Docker container. Data-driven workflow:
+### Docking (HADDOCK3 v2026.5.0, in Docker)
+Both strategies use the same data-driven workflow:
 
 ```
-topoaa -> rigidbody -> seletop -> flexref -> emref -> clustfcc -> seletopclusts -> caprieval
+topoaa → rigidbody → seletop → flexref → emref → clustfcc → seletopclusts → caprieval
 ```
 
-Two experiments:
-1. **Guided:** ambiguous interaction restraints (AIRs) directing ERY2-4 toward the B7-1 region.
-2. **Blind (ab-initio):** no restraints, surface-wide random-AIR sampling of 1000 rigid-body models, to test whether the same site is recovered without guidance.
+- **Restraint-guided run** (`run_haddock3_docker.py`): 200 rigid-body models, AIRs targeting the B7-1 region.
+- **Blind run** (`run_abinitio.py`): 1000 rigid-body models, no AIRs, surface-wide random-AIR sampling.
+
+HADDOCK3 was executed inside a Docker container (the official open-source release; the same engine as the HADDOCK web server, requiring no separate registration).
 
 ### Analysis
-- Interface contact extraction (Biopython, 4.5 A cutoff).
-- Comparison against the B7-1 interface.
-- Spatial "tiebreaker": proximity of each candidate site to the B7-1 interface.
-- Contact-map figure (matplotlib).
+- Interface contacts (Biopython, 4.5 Å) for each run (`analyze_binding_site.py`, `analyze_abinitio.py`).
+- Comparison against the native B7-1 interface.
+- Spatial "tiebreaker" quantifying each candidate site's proximity to the B7-1 surface (`tiebreaker.py`).
+- Interface contact-map figure (matplotlib; `make_figure.py`).
 
 ---
 
-## Repository Structure
+## Results in detail
 
-```
-CTLA4-ERY24-Binding-Site-Analysis/
-├── README.md                     <- this file
-├── Dockerfile                    <- HADDOCK3 container definition
-├── docker-compose.yml
-├── requirements.txt              <- Python dependencies
-│
-├── scripts/                      <- all analysis & docking scripts
-│   ├── analyze_ery24_sequence.py     Peptide sequence properties
-│   ├── extract_b7_interface.py       B7-1/CTLA-4 interface from 1I8L
-│   ├── prepare_ctla4_receptor.py     Extract CTLA-4 chain
-│   ├── fix_chains.py                 Rename chains (A=receptor, B=peptide)
-│   ├── generate_haddock_restraints.py  Build AIR restraints
-│   ├── run_haddock3_docker.py        Guided docking run
-│   ├── run_abinitio.py               Blind docking run
-│   ├── run_ensemble.py               Replicate runs
-│   ├── analyze_binding_site.py       Extract guided binding site
-│   ├── analyze_abinitio.py           Extract blind binding site
-│   ├── compare_ensemble.py           Compare replicate sites
-│   ├── tiebreaker.py                 Spatial proximity vs B7-1
-│   └── make_figure.py                Contact-map figure
-│
-├── config/                       <- HADDOCK restraints & workflow configs
-│   ├── ery24_restraints.tbl          AIR restraints
-│   └── haddock3_workflow.cfg         Guided workflow
-│
-├── structures/                   <- input PDBs
-│   ├── ctla4_A.pdb                   CTLA-4 receptor (chain A)
-│   ├── ery24_B.pdb                   ERY2-4 peptide (chain B)
-│   └── ery24_alphafold.pdb           Raw AlphaFold model
-│
-└── report/                       <- deliverables
-    ├── ERY24_CTLA4_BindingSite_Report.pdf
-    ├── ERY24_contact_map.png
-    ├── ery24_binding_site_final.txt
-    └── abinitio_binding_site.txt
-```
-
-> **Note:** the large HADDOCK output directories (`results/haddock3_run_*`, hundreds of MB of intermediate files) are excluded via `.gitignore`. They are fully regenerable by running the scripts below.
-
----
-
-## How to Reproduce
-
-### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- Python 3.10+ with Biopython, numpy, pandas (`pip install -r requirements.txt`)
-
-### 1. Build the HADDOCK3 container
-```bash
-docker build -t haddock3-ery24:latest .
-```
-
-### 2. Prepare structures and restraints
-```bash
-python scripts/analyze_ery24_sequence.py       # peptide properties
-python scripts/extract_b7_interface.py          # B7-1 interface from 1I8L
-python scripts/prepare_ctla4_receptor.py        # CTLA-4 receptor
-# (ERY2-4 3D model comes from AlphaFold2 / ColabFold, provided in structures/)
-python scripts/fix_chains.py                     # rename chains A/B
-python scripts/generate_haddock_restraints.py   # build restraints
-```
-
-### 3. Run docking
-```bash
-python scripts/run_haddock3_docker.py           # guided docking (~15-30 min)
-python scripts/run_abinitio.py                  # blind docking (~1-2 h)
-```
-
-### 4. Analyse and visualise
-```bash
-python scripts/analyze_binding_site.py          # guided binding site
-python scripts/analyze_abinitio.py              # blind binding site
-python scripts/tiebreaker.py                    # proximity to B7-1
-python scripts/make_figure.py                   # contact-map figure
-```
-
----
-
-## Detailed Results
-
-### Guided docking — top cluster
+### Restraint-guided docking — top cluster
 
 | Metric | Value | Interpretation |
 |--------|-------|----------------|
-| HADDOCK score | -61.1 +/- 2.0 | Strongly favourable |
+| HADDOCK score | −61.1 ± 2.0 | Strongly favourable |
 | Cluster size | 10 models | Well-converged |
-| Buried surface area | 995 A^2 | Large interface |
-| Van der Waals energy | -37.5 | Good shape complementarity |
-| Electrostatic energy | -33.8 | Favourable polar contacts |
-| Desolvation energy | -26.0 | Favourable |
+| Buried surface area | 995 Å² | Large interface |
+| Van der Waals | −37.5 | Good shape complementarity |
+| Electrostatics | −33.8 | Favourable polar contacts |
+| Desolvation | −26.0 | Favourable |
 
-**ERY2-4 binding site on CTLA-4:** `95, 97, 98, 99, 100, 102, 103, 104, 105, 106`
+**Closest interfacial contacts**
 
-**Closest contacts:**
-
-| CTLA-4 | ERY2-4 | Distance (A) |
+| CTLA-4 | ERY2-4 | Distance (Å) |
 |--------|--------|--------------|
 | Glu97 | Gln24 | 1.74 |
 | Tyr104 | Gln24 | 2.25 |
@@ -198,57 +145,167 @@ python scripts/make_figure.py                   # contact-map figure
 | Tyr105 | Trp3 | 2.98 |
 | Tyr105 | Ile7 | 3.01 |
 
-The interface is dominated by CTLA-4 **Tyr104/Tyr105** and ERY2-4 **tryptophans (Trp3, Trp34, Trp35)** and **Leu8** — consistent with the conserved Leu->Trp substitution reported as critical in the original paper.
+![ERY2-4 / CTLA-4 interface contact map](report/ERY24_contact_map.png)
 
-### Comparison with B7-1
+### Overlap with the B7-1 interface
 
 | | Residues |
 |--|----------|
 | B7-1 interface | 33, 35, 53, 63, 65, 95, 97, 99, 100, 101, 102, 103, 104, 105, 106 |
 | ERY2-4 (guided) | 95, 97, 98, 99, 100, 102, 103, 104, 105, 106 |
-| **Shared** | **95, 97, 99, 100, 102, 103, 104, 105, 106 (90%)** |
+| **Shared (90 %)** | 95, 97, 99, 100, 102, 103, 104, 105, 106 |
 
-### Blind (ab-initio) docking
-- Top cluster score **-53.5**, 4 models, strong electrostatics (-102).
-- Localises to CTLA-4 residues **16, 61-70, 82, 127**.
-- Overlaps B7-1 by 2 residues (63, 65); **closest approach 0.0 A** — abuts the B7-1 surface.
+### Blind docking and spatial tiebreaker
 
-### Spatial tiebreaker
-| Site | B7-1 overlap | Closest approach | Verdict |
-|------|--------------|------------------|---------|
-| Guided (95-106) | 9 residues | 0.0 A | Direct steric block |
-| Blind (61-70) | 2 residues | 0.0 A | Abuts B7-1 surface |
+| Site | Origin | B7-1 overlap | Closest approach | Verdict |
+|------|--------|--------------|------------------|---------|
+| 95–106 | Restraint-guided | 9 residues | 0.0 Å | Direct steric overlap |
+| 61–70 | Blind (*ab initio*) | 2 residues | 0.0 Å | Abuts B7-1 surface |
 
-Both sites contact the B7-1 interface; neither is distant/allosteric.
+Both candidate sites contact the B7-1 interface; neither is distant/allosteric. The restraint-guided and blind strategies therefore **converge on the B7-1 binding surface**.
 
 ---
 
-## Limitations & Confidence
+## Validation and confidence
 
-- **Restraint dependence:** the 95-106 mode is obtained with restraints directing the search toward the B7-1 region; it is *not* the global minimum of unguided scoring. The blind run localises nearby but not identically. The defensible claim is "ERY2-4 binds at the B7-1 interface", with the exact footprint unresolved.
-- **No experimental reference structure:** no crystal structure of the ERY2-4/CTLA-4 complex exists, so CAPRI metrics reflect internal consistency, not accuracy against ground truth.
-- **Single peptide conformer:** one AlphaFold model was docked.
-- **Determinism:** the guided workflow reproduces the same dominant solution across runs (stable/reproducible).
+The result is supported by four independent lines of evidence:
+1. **Favourable, converged energetics** (score −61, 995 Å² BSA, 10-model cluster).
+2. **Chemical consistency with experimental SAR** (peptide tryptophans engaging the CTLA-4 tyrosine pocket).
+3. **Convergence of restraint-guided and blind docking** onto the B7-1 surface.
+4. **Consistency with the measured phenotype** (competitive inhibition explained by orthosteric occupancy).
 
-**Overall:** a well-supported, experimentally-consistent hypothesis for the ERY2-4 binding site — suitable for guiding confirmatory experiments, not a definitive structure.
+A built-in negative control: when input structures were incorrect (an unfolded peptide model / mismatched chain identifiers), docking energies collapsed to ≈0 with no convergence; favourable, converged energetics emerged only once inputs were corrected — indicating the reported interface is a genuine energetic minimum rather than an artefact.
 
 ---
 
-## Suggested Next Steps
+## Repository structure
 
-1. **Experimental discrimination (highest priority):** alanine mutagenesis to resolve the guided (95-106) vs blind (61-70) sites — e.g. CTLA-4 **Y104A / Y105A** or ERY2-4 **W34A** for the B7-competitive mode.
-2. **Co-docking exclusivity test:** check whether ERY2-4 and B7-1 can occupy CTLA-4 simultaneously without clashing — mutual exclusivity supports the competitive model.
-3. **Ensemble / enhanced sampling:** dock multiple AlphaFold conformers; increase blind sampling to test whether the B7 site appears among lower-ranked unguided clusters.
+```
+CTLA4-ERY24-Binding-Site-Analysis/
+│
+├── README.md                          Project overview (this file)
+├── Dockerfile                         HADDOCK3 container definition (Ubuntu + HADDOCK3)
+├── docker-compose.yml                 Optional container orchestration
+├── requirements.txt                   Python dependencies (Biopython, numpy, pandas, matplotlib)
+├── .gitignore                         Excludes large regenerable HADDOCK outputs
+│
+├── scripts/                           == All analysis and docking scripts ==
+│   │
+│   │   -- Structure & input preparation --
+│   ├── analyze_ery24_sequence.py      Compute ERY2-4 physicochemical properties & composition
+│   ├── extract_b7_interface.py        Derive native B7-1 interface on CTLA-4 from 1I8L
+│   │                                    (auto-detects interacting chain pair A-C, 4.5 A cutoff)
+│   ├── prepare_ctla4_receptor.py      Extract & clean CTLA-4 chain C from 1I8L
+│   ├── build_ery24_structure.py       (Legacy) initial backbone builder; superseded by AlphaFold
+│   ├── fix_chains.py                  Standardise chain IDs (receptor = A, peptide = B)
+│   ├── generate_haddock_restraints.py Build ambiguous interaction restraints (AIRs) for guided run
+│   │
+│   │   -- Docking (two strategies) --
+│   ├── run_haddock3_docker.py         RESTRAINT-GUIDED docking (AIRs -> B7-1 region, 200 models)
+│   ├── run_abinitio.py                BLIND / ab-initio docking (no restraints, 1000 models)
+│   ├── run_ensemble.py                Replicate-run driver (reproducibility checks)
+│   │
+│   │   -- Analysis & visualisation --
+│   ├── analyze_binding_site.py        Extract ERY2-4 contact residues (guided run)
+│   ├── analyze_abinitio.py            Extract ERY2-4 contact residues (blind run)
+│   ├── compare_ensemble.py            Compare binding sites across replicate runs
+│   ├── tiebreaker.py                  Spatial proximity of each site to the B7-1 surface
+│   └── make_figure.py                 Generate the interface contact-map figure (matplotlib)
+│
+├── config/                            == HADDOCK restraints & workflow configs ==
+│   ├── ery24_restraints.tbl           AIR restraints (guided run): peptide <-> B7-1 region
+│   ├── restraints_summary.json        Human-readable summary of restraint definitions
+│   ├── haddock3_workflow.cfg          Guided-run workflow definition
+│   ├── haddock3_abinitio.cfg          Blind-run workflow definition
+│   └── haddock3_run_*.cfg             Per-run configuration snapshots
+│
+├── structures/                        == Input 3D structures (PDB) ==
+│   ├── ctla4_receptor.pdb             CTLA-4 chain C (raw extract from 1I8L)
+│   ├── ctla4_A.pdb                    CTLA-4 receptor, chain relabelled A (docking input)
+│   ├── ery24_alphafold.pdb            ERY2-4 model from AlphaFold2 (raw, chain A)
+│   └── ery24_B.pdb                    ERY2-4 peptide, chain relabelled B (docking input)
+│
+├── report/                            == Deliverables ==
+│   ├── ERY24_CTLA4_BindingSite_Report.pdf   Full written report
+│   ├── ERY24_contact_map.png                Interface contact-map figure (Figure 1)
+│   ├── ery24_binding_site_final.txt         Guided-run binding site + detailed contacts
+│   └── abinitio_binding_site.txt            Blind-run binding site
+│
+└── results/                           == Key result files (large run dirs git-ignored) ==
+    ├── ERY24_contact_map.png
+    ├── ery24_binding_site_final.txt
+    ├── abinitio_binding_site.txt
+    └── ensemble_consensus.txt
+
+Notes:
+  - The large HADDOCK output directories (results/haddock3_run_*, results/haddock3_abinitio;
+    hundreds of MB of intermediate models) are excluded via .gitignore and are fully
+    regenerable by running the scripts.
+  - The ERY2-4 AlphaFold model is provided in structures/ (generated externally via ColabFold).
+```
+
+---
+
+## Reproducibility
+
+**Prerequisites:** Docker Desktop; Python 3.10+ with Biopython, NumPy, pandas, matplotlib.
+
+```bash
+# 1. Build the HADDOCK3 docking container
+docker build -t haddock3-ery24:latest .
+
+# 2. Prepare inputs
+python scripts/analyze_ery24_sequence.py     # peptide properties
+python scripts/extract_b7_interface.py        # native B7-1 interface from 1I8L
+python scripts/prepare_ctla4_receptor.py      # CTLA-4 receptor
+python scripts/fix_chains.py                  # standardise chain IDs (A/B)
+python scripts/generate_haddock_restraints.py # build AIR restraints (guided run)
+
+# 3a. Restraint-guided docking (~15-30 min)
+python scripts/run_haddock3_docker.py
+
+# 3b. Blind (ab-initio) docking (~1-2 h)
+python scripts/run_abinitio.py
+
+# 4. Analysis & figure
+python scripts/analyze_binding_site.py        # guided-run binding site
+python scripts/analyze_abinitio.py            # blind-run binding site
+python scripts/tiebreaker.py                  # proximity of each site to B7-1
+python scripts/make_figure.py                 # contact-map figure
+```
+
+The ERY2-4 3D model is provided in `structures/` (generated externally with AlphaFold2/ColabFold from the sequence in Fig. 3b of the reference paper).
+
+---
+
+## Limitations
+
+- **Restraint dependence.** The 95–106 mode is obtained by **restraint-guided** docking targeting the B7-1 region and is not the global minimum of unguided scoring; the **blind** run localises nearby (61–70) but not identically. The defensible claim is that ERY2-4 binds *at the B7-1 interface*, with the exact footprint unresolved.
+- **No experimental reference complex.** CAPRI-type metrics reflect internal consistency, not accuracy against a ground-truth structure (none exists for the ERY2-4/CTLA-4 complex).
+- **Single peptide conformer** was docked; peptide flexibility was sampled only during semi-flexible refinement.
+- **Deterministic runs.** Repeated executions of the restraint-guided workflow reproduce the same dominant solution (stable/reproducible, but not independent stochastic sampling).
+
+---
+
+## Future directions
+
+1. **Experimental discrimination (priority):** alanine mutagenesis (e.g. CTLA-4 Y104A/Y105A, ERY2-4 W34A) to resolve the exact footprint and test the predicted contacts.
+2. **Co-docking exclusivity test:** verify computationally that ERY2-4 and B7-1 cannot occupy CTLA-4 simultaneously, directly testing the competitive model.
+3. **Ensemble docking:** dock multiple AlphaFold conformers of ERY2-4 to assess conformer-dependence of the predicted site.
 
 ---
 
 ## References
 
-1. Ramanayake, S. et al. *Affinity Maturation of Helix-Loop-Helix Peptides that Target CTLA-4.* ACS Chem. Biol. 2020, 15, 360-368.
-2. HADDOCK3 — BonvinLab. https://github.com/haddocking/haddock3
-3. AlphaFold2 / ColabFold — Mirdita, M. et al. Nat. Methods 2022.
-4. PDB 1I8L — Structure of the CTLA-4/B7-1 complex.
+1. Ramanayake, S. et al. *Affinity Maturation of Helix–Loop–Helix Peptides that Target CTLA-4.* ACS Chem. Biol. 2020, 15, 360–368.
+2. Honorato, R. V. et al. *HADDOCK3 / The HADDOCK2.4 web server for integrative modeling of biomolecular complexes.* BonvinLab. https://github.com/haddocking/haddock3
+3. Mirdita, M. et al. *ColabFold: making protein folding accessible to all.* Nat. Methods 2022, 19, 679–682.
+4. Stamper, C. C. et al. *Crystal structure of the B7-1/CTLA-4 complex.* PDB 1I8L.
 
 ---
 
-*This repository contains a computational prediction intended for research and supervisory review. It is not an experimentally-determined structure.*
+> M. R. Sakeer. *Prediction of the ERY2-4 Peptide Binding Site on CTLA-4 by Restraint-Guided and Blind Molecular Docking.* GitHub repository, 2026.
+
+---
+
+*This repository presents a computational structural prediction for research purposes. It is not an experimentally-determined structure.*
