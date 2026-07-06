@@ -5,7 +5,6 @@
 [![Reference: PDB 1I8L](https://img.shields.io/badge/reference-PDB%201I8L-orange)]()
 [![Author: M.R. Sakeer](https://img.shields.io/badge/author-M.R.%20Sakeer-lightgrey)]()
 
-**Author:** M. R. Sakeer
 
 Computational identification of the binding site of the affinity-matured helix–loop–helix (HLH) peptide **ERY2-4** on the immune-checkpoint receptor **CTLA-4**, combining **restraint-guided (information-driven) docking** and **blind (*ab initio*) docking**. The study provides a structural rationale for the experimentally-reported competitive inhibition of the CTLA-4 / B7-1 interaction by ERY2-4.
 
