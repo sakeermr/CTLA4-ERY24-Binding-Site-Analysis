@@ -1,47 +1,89 @@
-# ERY2-4 / CTLA-4 Binding Site Analysis
+# fastsolv GitHub Action
 
-Computational prediction of the binding site of the **ERY2-4** helix-loop-helix peptide on **CTLA-4**, using restraint-guided and blind molecular docking (HADDOCK3).
+Automatically predicts **solid solubility (logS)** for a list of solute–solvent–temperature combinations using the [fastsolv](https://github.com/JacksonBurns/fastsolv) model. Results are uploaded as a downloadable CSV artifact.
 
-## Background
-ERY2-4 (Ramanayake et al., *ACS Chem. Biol.* 2020, 15, 360-368) binds CTLA-4 (KD ~197 nM) and competitively inhibits the CTLA-4/B7-1 interaction (IC50 ~1.1 uM). Its binding site was not determined experimentally. This project predicts it computationally.
+---
 
-- **Target:** CTLA-4 (chain C, PDB 1I8L)
-- **Reference binder:** B7-1
-- **Peptide:** ERY2-4 (\CAWGQAILEGELAWLEGGGGGAGQLADLKRQLAWWKQAC\), 3D model by AlphaFold2
+## How It Works
 
-## Key result
-Guided docking places ERY2-4 on the B7-1 binding surface (CTLA-4 residues 95-106; 90% overlap with the B7-1 interface; HADDOCK score -61.1, 995 A^2 BSA). Blind docking localises to an adjacent patch (61-70) that also abuts the B7-1 surface. Both strategies converge on the B7-1 interface, giving structural support for the observed competitive inhibition. See \eport/\ for the full write-up.
+```
+input.csv  →  GitHub Actions  →  fastsolv model  →  predictions.csv (artifact)
+```
 
-## Method
-HADDOCK3 v2026.5.0 run inside Docker. Pipeline: topology -> rigid-body -> flexible refinement -> energy minimisation -> FCC clustering -> CAPRI evaluation.
+The workflow installs `fastsolv`, runs inference on your input CSV, and uploads a `predictions.csv` you can download directly from the Actions tab.
 
-## Reproduce
-\\\
-# 1. Build the docking container
-docker build -t haddock3-ery24:latest .
+---
 
-# 2. Prepare structures & restraints
-python scripts/analyze_ery24_sequence.py
-python scripts/extract_b7_interface.py
-python scripts/prepare_ctla4_receptor.py
-python scripts/fix_chains.py
-python scripts/generate_haddock_restraints.py
+## Input Format
 
-# 3. Run guided docking
-python scripts/run_haddock3_docker.py
+Your CSV must contain these three columns (tab- or comma-separated):
 
-# 4. Analyse
-python scripts/analyze_binding_site.py
-python scripts/tiebreaker.py
-python scripts/make_figure.py
-\\\
+| Column | Description |
+|---|---|
+| `solvent_smiles` | SMILES string of the solvent |
+| `solute_smiles` | SMILES string of the solute |
+| `temperature` | Temperature in Kelvin (e.g. `298.15`) |
 
-## Repository layout
-- \scripts/\ - analysis and docking scripts
-- \config/\ - HADDOCK restraints and workflow configs
-- \structures/\ - receptor and peptide input PDBs
-- \eport/\ - final PDF report, figure, and summary
-- \Dockerfile\ - HADDOCK3 container definition
+**Example (`input.csv`):**
+```
+solvent_smiles	solute_smiles	temperature
+CC(=O)C	CC(C=C1)=CC2=C1C(C)(C)OC3=C2C(O)=CC(C(O)CCCC)=C3	298.15
+CC#N	CC(C=C1)=CC2=C1C(C)(C)OC3=C2C(O)=CC(C(O)CCCC)=C3	298.15
+```
 
-## Note
-This is a computational prediction. Confidence level: a well-supported, experimentally-consistent hypothesis, to be confirmed by mutagenesis (e.g. CTLA-4 Y104A/Y105A).
+---
+
+## Output Format
+
+The artifact `predictions.csv` contains all input columns plus:
+
+| Column | Description |
+|---|---|
+| `logS` | Predicted log solubility (ensemble mean across 4 models) |
+| `logS_stdev` | Standard deviation across ensemble (uncertainty estimate) |
+
+---
+
+## Usage
+
+### Option A — Push to trigger automatically
+
+1. Edit `input.csv` with your data
+2. Commit and push — the workflow runs automatically
+
+```bash
+git add input.csv
+git commit -m "Update input data"
+git push
+```
+
+### Option B — Trigger manually (with a custom CSV file)
+
+1. Push your CSV file to the repository (e.g. `inputs/my_compounds.csv`)
+2. Go to **Actions → FastSolv Solubility Prediction → Run workflow**
+3. Enter the path to your file (e.g. `inputs/my_compounds.csv`)
+4. Click **Run workflow**
+
+### Downloading Results
+
+1. Go to **Actions** tab → click your completed workflow run
+2. Scroll to the **Artifacts** section at the bottom
+3. Click **fastsolv-predictions** to download `predictions.csv`
+
+---
+
+## Workflow Details
+
+- **Runner:** `ubuntu-latest`
+- **Python:** 3.11
+- **Model:** fastsolv ensemble of 4 models (checkpoints from [Zenodo](https://zenodo.org/records/13943074))
+- **Caching:** pip packages and model checkpoints are cached — after the first run, subsequent runs skip the ~500 MB checkpoint download
+- **Artifact retention:** 30 days
+
+---
+
+## Reference
+
+> Attia, Burns, Doyle, Green — *"Solid Solubility Prediction at the Limit of Aleatoric Uncertainty"*
+> 
+> fastsolv package: https://github.com/JacksonBurns/fastsolv
