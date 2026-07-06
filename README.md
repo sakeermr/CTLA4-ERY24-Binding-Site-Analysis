@@ -164,6 +164,17 @@ HADDOCK3 was executed inside a Docker container (the official open-source releas
 
 Both candidate sites contact the B7-1 interface; neither is distant/allosteric. The restraint-guided and blind strategies therefore **converge on the B7-1 binding surface**.
 
+### Binding-site coordinates
+
+3D coordinates (Å) of the two candidate sites on CTLA-4, in the **PDB 1I8L reference frame** (CTLA-4 chain), for downstream use (e.g. defining a docking grid in Schrödinger/Glide or visualisation):
+
+| Site | Strategy | Cα centroid (x, y, z) | Key residues |
+|------|----------|-----------------------|--------------|
+| 95–106 | Restraint-guided | (4.06, 82.80, 128.25) | Tyr104, Tyr105, Pro102, Pro103 (MYPPPYY motif) |
+| 61–70 | Blind (*ab initio*) | (3.79, 73.77, 107.99) | Leu63, Asp64, Asp65 (charged patch) |
+
+The two centroids are **≈ 22 Å apart** — i.e. the two methods identify different *sub-regions* of the extended B7-1 binding surface (which spans CTLA-4 residues 33–106) rather than an identical patch. This separation is the principal remaining uncertainty and motivates orthogonal validation (independent docking software and/or mutagenesis). Full per-residue and per-atom coordinates are provided in `results/both_sites_coordinates.csv`, with each site also exported as a standalone PDB fragment (`results/guided_site_95-106.pdb`, `results/blind_site_61-70.pdb`).
+
 ---
 
 ## Validation and confidence
@@ -210,6 +221,7 @@ CTLA4-ERY24-Binding-Site-Analysis/
 │   ├── analyze_abinitio.py            Extract ERY2-4 contact residues (blind run)
 │   ├── compare_ensemble.py            Compare binding sites across replicate runs
 │   ├── tiebreaker.py                  Spatial proximity of each site to the B7-1 surface
+│   ├── extract_both_coordinates.py    Extract x/y/z coordinates & centroids of both sites
 │   └── make_figure.py                 Generate the interface contact-map figure (matplotlib)
 │
 ├── config/                            == HADDOCK restraints & workflow configs ==
@@ -235,6 +247,9 @@ CTLA4-ERY24-Binding-Site-Analysis/
     ├── ERY24_contact_map.png
     ├── ery24_binding_site_final.txt
     ├── abinitio_binding_site.txt
+    ├── both_sites_coordinates.csv     Per-atom x/y/z of both candidate sites
+    ├── guided_site_95-106.pdb         Guided-site residues (PDB fragment)
+    ├── blind_site_61-70.pdb           Blind-site residues (PDB fragment)
     └── ensemble_consensus.txt
 
 Notes:
@@ -271,6 +286,7 @@ python scripts/run_abinitio.py
 python scripts/analyze_binding_site.py        # guided-run binding site
 python scripts/analyze_abinitio.py            # blind-run binding site
 python scripts/tiebreaker.py                  # proximity of each site to B7-1
+python scripts/extract_both_coordinates.py    # x/y/z coordinates & centroids of both sites
 python scripts/make_figure.py                 # contact-map figure
 ```
 
@@ -289,9 +305,10 @@ The ERY2-4 3D model is provided in `structures/` (generated externally with Alph
 
 ## Future directions
 
-1. **Experimental discrimination (priority):** alanine mutagenesis (e.g. CTLA-4 Y104A/Y105A, ERY2-4 W34A) to resolve the exact footprint and test the predicted contacts.
-2. **Co-docking exclusivity test:** verify computationally that ERY2-4 and B7-1 cannot occupy CTLA-4 simultaneously, directly testing the competitive model.
-3. **Ensemble docking:** dock multiple AlphaFold conformers of ERY2-4 to assess conformer-dependence of the predicted site.
+1. **Orthogonal docking validation:** repeat the docking with an independent program (e.g. Schrödinger Glide peptide docking) to test whether a different method and scoring function localises ERY2-4 to the same region. The extracted site centroids can be used directly to define the search grid.
+2. **Experimental discrimination (priority):** alanine mutagenesis (e.g. CTLA-4 Y104A/Y105A, ERY2-4 W34A) to resolve the exact footprint and test the predicted contacts.
+3. **Co-docking exclusivity test:** verify computationally that ERY2-4 and B7-1 cannot occupy CTLA-4 simultaneously, directly testing the competitive model.
+4. **Ensemble docking:** dock multiple AlphaFold conformers of ERY2-4 to assess conformer-dependence of the predicted site.
 
 ---
 
@@ -303,6 +320,14 @@ The ERY2-4 3D model is provided in `structures/` (generated externally with Alph
 4. Stamper, C. C. et al. *Crystal structure of the B7-1/CTLA-4 complex.* PDB 1I8L.
 
 ---
+
+## Author and citation
+
+**Author:** M. R. Sakeer
+
+Work carried out as a computational structural-biology study predicting the ERY2-4 binding site on CTLA-4 by restraint-guided and blind molecular docking.
+
+If referring to this work, please cite as:
 
 > M. R. Sakeer. *Prediction of the ERY2-4 Peptide Binding Site on CTLA-4 by Restraint-Guided and Blind Molecular Docking.* GitHub repository, 2026.
 
